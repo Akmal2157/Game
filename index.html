@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Human VS Robot - игра</title>
+<meta name="description" content="Игра Human VS Robot: крестики-нолики против робота с тремя уровнями сложности.">
+<style>
+:root {
+    --bg: #07110d;
+    --panel: #f7fff8;
+    --ink: #17130e;
+    --muted: #607066;
+    --line: #b9d9c6;
+    --accent: #b9eb42;
+    --danger: #f0523d;
+    --robot: #27694c;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    overflow: hidden;
+    color: var(--ink);
+    background:
+        linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+        var(--bg);
+    background-size: 36px 36px;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+.wrap {
+    width: min(720px, 100%);
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.top h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    line-height: .9;
+    text-transform: uppercase;
+}
+
+.top a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 14px;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 900;
+}
+
+.panel {
+    padding: 16px;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    background: var(--panel);
+    box-shadow: 8px 8px 0 var(--danger);
+}
+
+.difficulty-title {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+}
+
+.difficulties,
+.scoreboard {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.diff-btn,
+.restart {
+    min-height: 38px;
+    padding: 0 14px;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 900;
+}
+
+.diff-btn.active {
+    background: var(--accent);
+    box-shadow: 3px 3px 0 var(--ink);
+}
+
+.level {
+    margin: 10px 0;
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.scoreboard {
+    margin-bottom: 12px;
+}
+
+.score {
+    flex: 1 1 130px;
+    padding: 8px;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    font-weight: 800;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: min(100%, 360px, 42svh);
+    margin: 0 auto;
+}
+
+.cell {
+    aspect-ratio: 1;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    font: inherit;
+    font-size: clamp(2rem, 9vw, 4.2rem);
+    font-weight: 900;
+}
+
+.cell:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--line);
+}
+
+.cell.x {
+    color: var(--danger);
+}
+
+.cell.o {
+    color: var(--robot);
+}
+
+.cell:disabled {
+    cursor: default;
+}
+
+.status {
+    min-height: 28px;
+    margin-top: 12px;
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.restart {
+    display: none;
+    margin-top: 8px;
+    background: var(--danger);
+    color: #fff;
+    box-shadow: 4px 4px 0 var(--ink);
+}
+
+@media (max-width: 640px) {
+    body {
+        padding: 10px;
+    }
+
+    .top {
+        align-items: center;
+        gap: 10px;
+    }
+
+    .top h1 {
+        font-size: clamp(1.35rem, 7vw, 1.8rem);
+    }
+
+    .top a {
+        min-height: 34px;
+        padding: 0 10px;
+        font-size: .9rem;
+    }
+
+    .panel {
+        padding: 12px;
+    }
+
+    .board {
+        width: min(100%, 300px, 40svh);
+    }
+}
+
+@media (max-height: 700px) {
+    body {
+        padding: 8px;
+    }
+
+    .top {
+        margin-bottom: 8px;
+    }
+
+    .top h1 {
+        font-size: clamp(1.6rem, 4vw, 2.4rem);
+    }
+
+    .top a,
+    .diff-btn,
+    .restart {
+        min-height: 34px;
+        padding: 0 10px;
+    }
+
+    .panel {
+        padding: 10px;
+    }
+
+    .difficulty-title,
+    .level,
+    .scoreboard {
+        margin-bottom: 8px;
+    }
+
+    .level {
+        margin-top: 8px;
+    }
+
+    .score {
+        padding: 6px 8px;
+    }
+
+    .board {
+        width: min(100%, 320px, 40svh);
+        gap: 6px;
+    }
+
+    .status {
+        margin-top: 8px;
+    }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+    <header class="top">
+        <h1>Human VS Robot</h1>
+        <a href="./landing.html">О лендинге</a>
+    </header>
+
+    <section class="panel" aria-labelledby="game-title">
+        <h2 id="game-title" class="difficulty-title">Выберите уровень сложности</h2>
+
+        <div class="difficulties" aria-label="Уровни сложности">
+            <button class="diff-btn active" data-level="easy" type="button">Лёгкий</button>
+            <button class="diff-btn" data-level="medium" type="button">Средний</button>
+            <button class="diff-btn" data-level="hard" type="button">Сложный</button>
+        </div>
+
+        <div class="level">Текущий уровень: <span id="currentLevel">Лёгкий</span></div>
+
+        <div class="scoreboard" aria-label="Счёт игры">
+            <div class="score">Игрок: <span id="playerWins">0</span></div>
+            <div class="score">Робот: <span id="robotWins">0</span></div>
+            <div class="score">Ничьи: <span id="draws">0</span></div>
+        </div>
+
+        <div class="board" id="board" aria-label="Игровое поле"></div>
+        <div class="status" id="status" aria-live="polite">Ваш ход</div>
+        <button class="restart" id="restart" type="button">Играть снова</button>
+    </section>
+</main>
+
+<script>
+const boardEl = document.getElementById("board");
+const statusEl = document.getElementById("status");
+const restartBtn = document.getElementById("restart");
+const playerWinsEl = document.getElementById("playerWins");
+const robotWinsEl = document.getElementById("robotWins");
+const drawsEl = document.getElementById("draws");
+const currentLevelEl = document.getElementById("currentLevel");
+
+let board = Array(9).fill("");
+let gameOver = false;
+let playerTurn = true;
+let difficulty = "easy";
+let playerWins = 0;
+let robotWins = 0;
+let draws = 0;
+
+const wins = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
+];
+
+const levelNames = {
+    easy: "Лёгкий",
+    medium: "Средний",
+    hard: "Сложный"
+};
+
+function createBoard() {
+    boardEl.innerHTML = "";
+    board.forEach((_, index) => {
+        const cell = document.createElement("button");
+        cell.className = "cell";
+        cell.type = "button";
+        cell.setAttribute("aria-label", `Клетка ${index + 1}: пусто`);
+        cell.addEventListener("click", () => playerMove(index));
+        boardEl.appendChild(cell);
+    });
+}
+
+function render() {
+    [...boardEl.children].forEach((cell, index) => {
+        cell.textContent = board[index];
+        cell.disabled = gameOver || !playerTurn || board[index] !== "";
+        cell.setAttribute("aria-label", board[index] ? `Клетка ${index + 1}: ${board[index]}` : `Клетка ${index + 1}: пусто`);
+        cell.classList.toggle("x", board[index] === "X");
+        cell.classList.toggle("o", board[index] === "O");
+    });
+}
+
+function playerMove(index) {
+    if (gameOver || !playerTurn || board[index] !== "") return;
+    board[index] = "X";
+    render();
+    if (checkEnd()) return;
+
+    playerTurn = false;
+    statusEl.textContent = "Робот думает...";
+    render();
+    setTimeout(computerMove, 420 + Math.random() * 280);
+}
+
+function computerMove() {
+    if (gameOver) return;
+
+    let move;
+    if (difficulty === "easy") move = easyMove();
+    if (difficulty === "medium") move = mediumMove();
+    if (difficulty === "hard") move = bestMove();
+
+    if (move !== undefined) board[move] = "O";
+    if (checkEnd()) return;
+
+    playerTurn = true;
+    statusEl.textContent = "Ваш ход";
+    render();
+}
+
+function easyMove() {
+    const freeCells = board.map((value, index) => value === "" ? index : null).filter(value => value !== null);
+    return freeCells[Math.floor(Math.random() * freeCells.length)];
+}
+
+function mediumMove() {
+    if (Math.random() < 0.2) return easyMove();
+
+    let move = findWinningMove("O");
+    if (move !== null) return move;
+
+    move = findWinningMove("X");
+    if (move !== null) return move;
+
+    if (board[4] === "") return 4;
+    return easyMove();
+}
+
+function findWinningMove(symbol) {
+    for (const combo of wins) {
+        const [a, b, c] = combo;
+        const values = [board[a], board[b], board[c]];
+        if (values.filter(value => value === symbol).length === 2 && values.includes("")) {
+            if (board[a] === "") return a;
+            if (board[b] === "") return b;
+            if (board[c] === "") return c;
+        }
+    }
+    return null;
+}
+
+function bestMove() {
+    let bestScore = -Infinity;
+    let move;
+
+    for (let index = 0; index < 9; index++) {
+        if (board[index] === "") {
+            board[index] = "O";
+            const score = minimax(board, false);
+            board[index] = "";
+            if (score > bestScore) {
+                bestScore = score;
+                move = index;
+            }
+        }
+    }
+    return move;
+}
+
+function minimax(boardState, isMaximizing) {
+    const result = evaluate(boardState);
+    if (result !== null) return result;
+
+    if (isMaximizing) {
+        let best = -Infinity;
+        for (let index = 0; index < 9; index++) {
+            if (boardState[index] === "") {
+                boardState[index] = "O";
+                best = Math.max(best, minimax(boardState, false));
+                boardState[index] = "";
+            }
+        }
+        return best;
+    }
+
+    let best = Infinity;
+    for (let index = 0; index < 9; index++) {
+        if (boardState[index] === "") {
+            boardState[index] = "X";
+            best = Math.min(best, minimax(boardState, true));
+            boardState[index] = "";
+        }
+    }
+    return best;
+}
+
+function evaluate(boardState) {
+    for (const combo of wins) {
+        const [a, b, c] = combo;
+        if (boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c]) {
+            if (boardState[a] === "O") return 10;
+            if (boardState[a] === "X") return -10;
+        }
+    }
+    if (!boardState.includes("")) return 0;
+    return null;
+}
+
+function checkWinner(symbol) {
+    return wins.some(combo => combo.every(index => board[index] === symbol));
+}
+
+function checkEnd() {
+    if (checkWinner("X")) {
+        gameOver = true;
+        playerWins++;
+        playerWinsEl.textContent = playerWins;
+        statusEl.textContent = "Вы победили!";
+        restartBtn.style.display = "inline-flex";
+        render();
+        return true;
+    }
+
+    if (checkWinner("O")) {
+        gameOver = true;
+        robotWins++;
+        robotWinsEl.textContent = robotWins;
+        statusEl.textContent = "Робот победил!";
+        restartBtn.style.display = "inline-flex";
+        render();
+        return true;
+    }
+
+    if (!board.includes("")) {
+        gameOver = true;
+        draws++;
+        drawsEl.textContent = draws;
+        statusEl.textContent = "Ничья!";
+        restartBtn.style.display = "inline-flex";
+        render();
+        return true;
+    }
+
+    return false;
+}
+
+function resetGame() {
+    board = Array(9).fill("");
+    gameOver = false;
+    playerTurn = true;
+    statusEl.textContent = "Ваш ход";
+    restartBtn.style.display = "none";
+    render();
+}
+
+restartBtn.addEventListener("click", resetGame);
+
+document.querySelectorAll(".diff-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".diff-btn").forEach(button => button.classList.remove("active"));
+        btn.classList.add("active");
+        difficulty = btn.dataset.level;
+        currentLevelEl.textContent = levelNames[difficulty];
+        resetGame();
+    });
+});
+
+createBoard();
+render();
+</script>
+</body>
+</html>
