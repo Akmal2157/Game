@@ -844,6 +844,7 @@
       paddleSpeed: 560,
       ballSize: 14,
       ballSpeed: 430,
+      ballSpeedIncrease: 1.065,
       ballMaxSpeed: 820,
       leftY: 210,
       rightY: 210,
@@ -901,6 +902,18 @@
       const speed = Math.min(state.ballSpeed, Math.max(330, state.width * 0.46));
       state.ballVX = Math.cos(angle) * speed * state.serveDirection;
       state.ballVY = Math.sin(angle) * speed;
+    }
+
+    function increaseBallSpeed() {
+      const currentSpeed = Math.hypot(state.ballVX, state.ballVY);
+      if (!currentSpeed || currentSpeed >= state.ballMaxSpeed) {
+        return;
+      }
+
+      const nextSpeed = Math.min(state.ballMaxSpeed, currentSpeed * state.ballSpeedIncrease);
+      const multiplier = nextSpeed / currentSpeed;
+      state.ballVX *= multiplier;
+      state.ballVY *= multiplier;
     }
 
     function resetGame() {
@@ -1023,11 +1036,13 @@
       if (state.ballY - radius <= 0) {
         state.ballY = radius;
         state.ballVY *= -1;
+        increaseBallSpeed();
         hitSound();
       }
       if (state.ballY + radius >= state.height) {
         state.ballY = state.height - radius;
         state.ballVY *= -1;
+        increaseBallSpeed();
         hitSound();
       }
 
@@ -1061,7 +1076,7 @@
 
       const paddleCenter = y + state.paddleHeight / 2;
       const impact = (state.ballY - paddleCenter) / (state.paddleHeight / 2);
-      const speed = Math.min(state.ballMaxSpeed, Math.hypot(state.ballVX, state.ballVY) * 1.055);
+      const speed = Math.min(state.ballMaxSpeed, Math.hypot(state.ballVX, state.ballVY) * state.ballSpeedIncrease);
       const angle = impact * 0.78;
       state.ballVX = Math.cos(angle) * speed * direction;
       state.ballVY = Math.sin(angle) * speed;
