@@ -991,6 +991,7 @@
 
   <script>
     (() => {
+      try {
 
     const questionModal = document.getElementById('questionModal');
     const questionsLink = document.getElementById('questionsLink');
@@ -1460,6 +1461,9 @@
     resizeCanvas();
     resetGame();
   
+      } catch (error) {
+        document.documentElement.dataset.scriptError = error && (error.stack || error.message || String(error));
+      }
     })();
   </script>
 </body>
