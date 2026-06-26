@@ -836,7 +836,7 @@
       </a>
       <nav class="nav-links" aria-label="Разделы">
         <a href="#features">Возможности</a>
-        <a href="#questions">Вопросы</a>
+        <a href="#questions" id="questionsLink">Вопросы</a>
         <a href="#play">Играть</a>
       </nav>
     </header>
@@ -988,6 +988,7 @@
   <script>
 
     const questionModal = document.getElementById('questionModal');
+    const questionsLink = document.getElementById('questionsLink');
     const questionOpenLinks = document.querySelectorAll('a[href="#questions"]');
     const questionClose = document.getElementById('questionClose');
     const questionForm = document.getElementById('questionForm');
@@ -1007,7 +1008,12 @@
       questionModal.hidden = true;
     }
 
+    if (questionsLink) questionsLink.addEventListener('click', openQuestionModal);
     questionOpenLinks.forEach(link => link.addEventListener('click', openQuestionModal));
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash === '#questions') openQuestionModal();
+    });
+    if (window.location.hash === '#questions') openQuestionModal();
     questionClose.addEventListener('click', closeQuestionModal);
     questionModal.addEventListener('click', event => {
       if (event.target === questionModal) closeQuestionModal();
