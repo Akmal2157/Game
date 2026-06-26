@@ -949,7 +949,7 @@
             <canvas id="court" aria-label="Игровое поле"></canvas>
             <div class="message" id="message">
               <h2>Настольный теннис</h2>
-              <p>Нажмите кнопку запуска. Первый до 10 очков побеждает.</p>
+              <p>Нажмите кнопку запуска. E ставит игру на паузу и продолжает матч. Первый до 10 очков побеждает.</p>
             </div>
           </section>
 
@@ -1125,7 +1125,7 @@
       state.rightY = (state.height - state.paddleHeight) / 2;
       resetBall();
       updateScore();
-      showMessage('Настольный теннис', 'Нажмите кнопку запуска. Первый до 10 очков побеждает.');
+      showMessage('Настольный теннис', 'Нажмите кнопку запуска. E ставит игру на паузу и продолжает матч. Первый до 10 очков побеждает.');
       statusEl.textContent = 'Готовы к подаче';
       startButton.textContent = 'Старт';
       draw();
@@ -1150,7 +1150,7 @@
         state.running = false;
         startButton.textContent = 'Продолжить';
         statusEl.textContent = 'Пауза';
-        showMessage('Пауза', 'Нажмите кнопку, чтобы продолжить.');
+        showMessage('Пауза', 'Нажмите E или кнопку, чтобы продолжить.');
       } else {
         startGame();
       }
@@ -1399,6 +1399,12 @@
       if (isTextField(event.target)) return;
 
       const code = event.code;
+      if (code === 'KeyE') {
+        event.preventDefault();
+        togglePause();
+        return;
+      }
+
       if (['KeyW', 'KeyS', 'ArrowUp', 'ArrowDown'].includes(code)) {
         event.preventDefault();
         keys.add(code);
