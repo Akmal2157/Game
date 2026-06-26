@@ -543,6 +543,74 @@
       gap: 10px;
     }
 
+    .question-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 24px;
+    }
+
+    .question-card,
+    .question-form {
+      border: 1px solid rgba(148, 187, 255, 0.22);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .question-card {
+      padding: 24px;
+    }
+
+    .question-card h3 {
+      margin: 0 0 10px;
+      font-size: 24px;
+    }
+
+    .question-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .question-form {
+      display: grid;
+      gap: 14px;
+      padding: 20px;
+    }
+
+    .question-form label {
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .question-form textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      padding: 16px;
+      border: 1px solid rgba(148, 187, 255, 0.3);
+      border-radius: 18px;
+      color: var(--text);
+      background: rgba(3, 13, 21, 0.76);
+      font: inherit;
+      line-height: 1.55;
+    }
+
+    .question-form textarea:focus {
+      outline: 2px solid rgba(77, 215, 255, 0.85);
+      outline-offset: 3px;
+    }
+
+    .question-note {
+      min-height: 22px;
+      margin: 0;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
     .footer {
       padding: 28px clamp(16px, 5vw, 72px) 42px;
       color: rgba(244, 251, 255, 0.52);
@@ -581,6 +649,10 @@
 
       .features {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .question-panel {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -693,6 +765,7 @@
       </a>
       <nav class="nav-links" aria-label="Разделы">
         <a href="#features">Возможности</a>
+        <a href="#questions">Вопросы</a>
         <a href="#play">Играть</a>
       </nav>
     </header>
@@ -762,6 +835,23 @@
         </div>
       </section>
 
+      <section class="section" id="questions" aria-labelledby="questions-title">
+        <p class="eyebrow">Вопросы</p>
+        <h2 class="section-title" id="questions-title">Задайте вопрос перед матчем</h2>
+        <div class="question-panel">
+          <article class="question-card">
+            <h3>Что хотите узнать?</h3>
+            <p>Напишите вопрос о правилах, управлении, AI-сопернике или режиме на двоих. Форма покажет ваш вопрос на странице, чтобы было понятно, что он принят.</p>
+          </article>
+          <form class="question-form" id="questionForm">
+            <label for="questionText">Ваш вопрос</label>
+            <textarea id="questionText" name="question" placeholder="Например: как выключить AI и играть вдвоём?" required></textarea>
+            <button class="primary" type="submit">Отправить вопрос</button>
+            <p class="question-note" id="questionNote" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
       <section class="section play-section" id="play" aria-labelledby="play-title">
         <div class="play-header">
           <div>
@@ -816,6 +906,20 @@
   </div>
 
   <script>
+
+    const questionForm = document.getElementById('questionForm');
+    const questionText = document.getElementById('questionText');
+    const questionNote = document.getElementById('questionNote');
+
+    questionForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const question = questionText.value.trim();
+      if (!question) return;
+
+      questionNote.textContent = 'Вопрос принят: ' + question;
+      questionText.value = '';
+    });
+
     const canvas = document.getElementById('court');
     const ctx = canvas.getContext('2d');
     const leftScoreEl = document.getElementById('leftScore');
