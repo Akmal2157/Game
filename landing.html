@@ -662,16 +662,28 @@
     }
 
     .question-email {
+      display: grid;
+      gap: 8px;
       margin: 0;
       color: var(--muted);
       font-size: 14px;
       line-height: 1.5;
     }
 
-    .question-email a {
-      color: var(--accent);
-      font-weight: 800;
-      word-break: break-word;
+    .question-email input {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 14px;
+      border: 1px solid rgba(148, 187, 255, 0.3);
+      border-radius: 14px;
+      color: var(--text);
+      background: rgba(3, 13, 21, 0.76);
+      font: inherit;
+    }
+
+    .question-email input:focus {
+      outline: 2px solid rgba(77, 215, 255, 0.85);
+      outline-offset: 3px;
     }
 
     .footer {
@@ -911,7 +923,10 @@
             <label for="questionText">Ваш вопрос</label>
             <textarea id="questionText" name="question" placeholder="Например: как выключить AI и играть вдвоём?" required></textarea>
             <button class="primary" type="submit">Отправить вопрос</button>
-            <p class="question-email">Ответы и вопросы приходят на <a href="mailto:dzebarovakmal@gmail.com">dzebarovakmal@gmail.com</a></p>
+            <label class="question-email" for="questionEmail">
+              Ваша электронная почта
+              <input id="questionEmail" name="email" type="email" placeholder="name@example.com" required>
+            </label>
             <p class="question-note" id="questionNote" aria-live="polite"></p>
           </form>
         </div>
@@ -978,6 +993,7 @@
     const questionForm = document.getElementById('questionForm');
     const questionText = document.getElementById('questionText');
     const questionNote = document.getElementById('questionNote');
+    const questionEmail = document.getElementById('questionEmail');
 
     function openQuestionModal(event) {
       if (event) event.preventDefault();
@@ -1004,14 +1020,19 @@
     questionForm.addEventListener('submit', event => {
       event.preventDefault();
       const question = questionText.value.trim();
-      if (!question) return;
+      const senderEmail = questionEmail.value.trim();
+      if (!question || !senderEmail) return;
 
       const email = 'dzebarovakmal@gmail.com';
       const subject = encodeURIComponent('Вопрос с лендинга игры');
-      const body = encodeURIComponent(question);
+      const body = encodeURIComponent('Email для ответа: ' + senderEmail + '
+
+Вопрос:
+' + question);
       window.location.href = 'mailto:' + email + '?subject=' + subject + '&body=' + body;
       questionNote.textContent = 'Открываем письмо на ' + email;
       questionText.value = '';
+      questionEmail.value = '';
     });
 
     const canvas = document.getElementById('court');
