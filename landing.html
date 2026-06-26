@@ -547,7 +547,7 @@
       position: fixed;
       inset: 0;
       z-index: 30;
-      display: grid;
+      display: none;
       place-items: center;
       padding: 20px;
       background: rgba(1, 8, 13, 0.74);
@@ -556,11 +556,8 @@
       transition: opacity 180ms ease;
     }
 
-    .question-modal.is-hidden {
-      display: none;
-    }
-
-    .question-modal.is-open {
+    .question-modal:target {
+      display: grid;
       opacity: 1;
       pointer-events: auto;
     }
@@ -578,7 +575,7 @@
       transition: transform 180ms ease;
     }
 
-    .question-modal.is-open .question-window {
+    .question-modal:target .question-window {
       transform: translateY(0) scale(1);
     }
 
@@ -910,20 +907,20 @@
         </div>
       </section>
 
-      <div class="question-modal is-hidden" id="questionModal" role="dialog" aria-modal="true" aria-labelledby="questions-title">
+      <div class="question-modal" id="questions" role="dialog" aria-modal="true" aria-labelledby="questions-title">
         <div class="question-window">
           <div class="question-window-header">
             <div>
               <p class="eyebrow">Вопросы</p>
               <h2 id="questions-title">Задайте вопрос перед матчем</h2>
             </div>
-            <button class="question-close" id="questionClose" type="button" aria-label="Закрыть окно">×</button>
+            <a class="question-close" href="#top" aria-label="Закрыть окно">×</a>
           </div>
           <article class="question-card">
             <h3>Что хотите узнать?</h3>
             <p>Напишите вопрос о правилах, управлении, AI-сопернике или режиме на двоих. После отправки откроется письмо на нужный адрес.</p>
           </article>
-          <form class="question-form" id="questionForm">
+          <form class="question-form" id="questionForm" action="mailto:dzebarovakmal@gmail.com" method="post" enctype="text/plain">
             <label for="questionText">Ваш вопрос</label>
             <textarea id="questionText" name="question" placeholder="Например: как выключить AI и играть вдвоём?" required></textarea>
             <label class="question-email" for="questionEmail">
@@ -992,60 +989,6 @@
   <script>
     (() => {
       try {
-
-    const questionModal = document.getElementById('questionModal');
-    const questionsLink = document.getElementById('questionsLink');
-    const questionOpenLinks = document.querySelectorAll('a[href="#questions"]');
-    const questionClose = document.getElementById('questionClose');
-    const questionForm = document.getElementById('questionForm');
-    const questionText = document.getElementById('questionText');
-    const questionNote = document.getElementById('questionNote');
-    const questionEmail = document.getElementById('questionEmail');
-
-    function openQuestionModal(event) {
-      if (event) event.preventDefault();
-      questionModal.classList.remove('is-hidden');
-      questionModal.classList.add('is-open');
-      questionText.focus();
-    }
-
-    function closeQuestionModal() {
-      questionModal.classList.remove('is-open');
-      questionModal.classList.add('is-hidden');
-    }
-
-    if (questionsLink) questionsLink.addEventListener('click', openQuestionModal);
-    questionOpenLinks.forEach(link => link.addEventListener('click', openQuestionModal));
-    window.addEventListener('hashchange', () => {
-      if (window.location.hash === '#questions') openQuestionModal();
-    });
-    if (window.location.hash === '#questions') openQuestionModal();
-    questionClose.addEventListener('click', closeQuestionModal);
-    questionModal.addEventListener('click', event => {
-      if (event.target === questionModal) closeQuestionModal();
-    });
-
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && questionModal.classList.contains('is-open')) closeQuestionModal();
-    });
-
-    questionForm.addEventListener('submit', event => {
-      event.preventDefault();
-      const question = questionText.value.trim();
-      const senderEmail = questionEmail.value.trim();
-      if (!question || !senderEmail) return;
-
-      const email = 'dzebarovakmal@gmail.com';
-      const subject = encodeURIComponent('Вопрос с лендинга игры');
-      const body = encodeURIComponent('Email для ответа: ' + senderEmail + '
-
-Вопрос:
-' + question);
-      window.location.href = 'mailto:' + email + '?subject=' + subject + '&body=' + body;
-      questionNote.textContent = 'Открываем письмо на ' + email;
-      questionText.value = '';
-      questionEmail.value = '';
-    });
 
     const canvas = document.getElementById('court');
     const ctx = canvas.getContext('2d');
