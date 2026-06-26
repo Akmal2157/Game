@@ -543,12 +543,62 @@
       gap: 10px;
     }
 
-    .question-panel {
+    .question-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
       display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
-      gap: 18px;
-      align-items: stretch;
-      margin-top: 24px;
+      place-items: center;
+      padding: 20px;
+      background: rgba(1, 8, 13, 0.74);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+    }
+
+    .question-modal.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .question-window {
+      width: min(720px, 100%);
+      max-height: min(86vh, 760px);
+      overflow: auto;
+      border: 1px solid rgba(148, 187, 255, 0.26);
+      border-radius: 28px;
+      background: rgba(5, 18, 29, 0.97);
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 4vw, 32px);
+      transform: translateY(18px) scale(0.98);
+      transition: transform 180ms ease;
+    }
+
+    .question-modal.is-open .question-window {
+      transform: translateY(0) scale(1);
+    }
+
+    .question-window-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .question-window-header h2 {
+      margin: 8px 0 0;
+      font-size: clamp(28px, 5vw, 46px);
+      line-height: 1.02;
+    }
+
+    .question-close {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      padding: 0;
+      font-size: 24px;
+      line-height: 1;
     }
 
     .question-card,
@@ -556,17 +606,17 @@
       border: 1px solid rgba(148, 187, 255, 0.22);
       border-radius: 24px;
       background: rgba(255, 255, 255, 0.06);
-      box-shadow: var(--shadow);
       backdrop-filter: blur(18px);
     }
 
     .question-card {
-      padding: 24px;
+      padding: 20px;
+      margin-bottom: 16px;
     }
 
     .question-card h3 {
       margin: 0 0 10px;
-      font-size: 24px;
+      font-size: 22px;
     }
 
     .question-card p {
@@ -662,10 +712,6 @@
 
       .features {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .question-panel {
-        grid-template-columns: 1fr;
       }
     }
 
@@ -848,13 +894,18 @@
         </div>
       </section>
 
-      <section class="section" id="questions" aria-labelledby="questions-title">
-        <p class="eyebrow">Вопросы</p>
-        <h2 class="section-title" id="questions-title">Задайте вопрос перед матчем</h2>
-        <div class="question-panel">
+      <div class="question-modal" id="questionModal" role="dialog" aria-modal="true" aria-labelledby="questions-title" hidden>
+        <div class="question-window">
+          <div class="question-window-header">
+            <div>
+              <p class="eyebrow">Вопросы</p>
+              <h2 id="questions-title">Задайте вопрос перед матчем</h2>
+            </div>
+            <button class="question-close" id="questionClose" type="button" aria-label="Закрыть окно">×</button>
+          </div>
           <article class="question-card">
             <h3>Что хотите узнать?</h3>
-            <p>Напишите вопрос о правилах, управлении, AI-сопернике или режиме на двоих. Форма покажет ваш вопрос на странице, чтобы было понятно, что он принят.</p>
+            <p>Напишите вопрос о правилах, управлении, AI-сопернике или режиме на двоих. После отправки откроется письмо на нужный адрес.</p>
           </article>
           <form class="question-form" id="questionForm">
             <label for="questionText">Ваш вопрос</label>
@@ -864,7 +915,7 @@
             <p class="question-note" id="questionNote" aria-live="polite"></p>
           </form>
         </div>
-      </section>
+      </div>
 
       <section class="section play-section" id="play" aria-labelledby="play-title">
         <div class="play-header">
@@ -921,9 +972,34 @@
 
   <script>
 
+    const questionModal = document.getElementById('questionModal');
+    const questionOpenLinks = document.querySelectorAll('a[href="#questions"]');
+    const questionClose = document.getElementById('questionClose');
     const questionForm = document.getElementById('questionForm');
     const questionText = document.getElementById('questionText');
     const questionNote = document.getElementById('questionNote');
+
+    function openQuestionModal(event) {
+      if (event) event.preventDefault();
+      questionModal.hidden = false;
+      questionModal.classList.add('is-open');
+      questionText.focus();
+    }
+
+    function closeQuestionModal() {
+      questionModal.classList.remove('is-open');
+      questionModal.hidden = true;
+    }
+
+    questionOpenLinks.forEach(link => link.addEventListener('click', openQuestionModal));
+    questionClose.addEventListener('click', closeQuestionModal);
+    questionModal.addEventListener('click', event => {
+      if (event.target === questionModal) closeQuestionModal();
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !questionModal.hidden) closeQuestionModal();
+    });
 
     questionForm.addEventListener('submit', event => {
       event.preventDefault();
