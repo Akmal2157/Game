@@ -1391,15 +1391,23 @@
     }
 
     window.addEventListener('resize', resizeCanvas);
+    function isTextField(target) {
+      return target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+    }
+
     window.addEventListener('keydown', (event) => {
+      if (isTextField(event.target)) return;
+
       const code = event.code;
       if (['KeyW', 'KeyS', 'ArrowUp', 'ArrowDown'].includes(code)) {
         event.preventDefault();
+        keys.add(code);
       }
-      keys.add(code);
     });
 
     window.addEventListener('keyup', (event) => {
+      if (isTextField(event.target)) return;
+
       keys.delete(event.code);
     });
 
