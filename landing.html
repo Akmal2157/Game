@@ -611,6 +611,19 @@
       font-weight: 800;
     }
 
+    .question-email {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .question-email a {
+      color: var(--accent);
+      font-weight: 800;
+      word-break: break-word;
+    }
+
     .footer {
       padding: 28px clamp(16px, 5vw, 72px) 42px;
       color: rgba(244, 251, 255, 0.52);
@@ -847,6 +860,7 @@
             <label for="questionText">Ваш вопрос</label>
             <textarea id="questionText" name="question" placeholder="Например: как выключить AI и играть вдвоём?" required></textarea>
             <button class="primary" type="submit">Отправить вопрос</button>
+            <p class="question-email">Ответы и вопросы приходят на <a href="mailto:dzebarovakmal@gmail.com">dzebarovakmal@gmail.com</a></p>
             <p class="question-note" id="questionNote" aria-live="polite"></p>
           </form>
         </div>
@@ -916,7 +930,11 @@
       const question = questionText.value.trim();
       if (!question) return;
 
-      questionNote.textContent = 'Вопрос принят: ' + question;
+      const email = 'dzebarovakmal@gmail.com';
+      const subject = encodeURIComponent('Вопрос с лендинга игры');
+      const body = encodeURIComponent(question);
+      window.location.href = 'mailto:' + email + '?subject=' + subject + '&body=' + body;
+      questionNote.textContent = 'Открываем письмо на ' + email;
       questionText.value = '';
     });
 
