@@ -556,6 +556,10 @@
       transition: opacity 180ms ease;
     }
 
+    .question-modal.is-hidden {
+      display: none;
+    }
+
     .question-modal.is-open {
       opacity: 1;
       pointer-events: auto;
@@ -906,7 +910,7 @@
         </div>
       </section>
 
-      <div class="question-modal" id="questionModal" role="dialog" aria-modal="true" aria-labelledby="questions-title" hidden>
+      <div class="question-modal is-hidden" id="questionModal" role="dialog" aria-modal="true" aria-labelledby="questions-title">
         <div class="question-window">
           <div class="question-window-header">
             <div>
@@ -998,14 +1002,14 @@
 
     function openQuestionModal(event) {
       if (event) event.preventDefault();
-      questionModal.hidden = false;
+      questionModal.classList.remove('is-hidden');
       questionModal.classList.add('is-open');
       questionText.focus();
     }
 
     function closeQuestionModal() {
       questionModal.classList.remove('is-open');
-      questionModal.hidden = true;
+      questionModal.classList.add('is-hidden');
     }
 
     if (questionsLink) questionsLink.addEventListener('click', openQuestionModal);
@@ -1020,7 +1024,7 @@
     });
 
     document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && !questionModal.hidden) closeQuestionModal();
+      if (event.key === 'Escape' && questionModal.classList.contains('is-open')) closeQuestionModal();
     });
 
     questionForm.addEventListener('submit', event => {
